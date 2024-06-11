@@ -1,8 +1,11 @@
 <template>
   <div class="App">
     <nav class="App__nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/user">User</router-link>
+      <router-link to="/">Home</router-link> | 
+      <router-link to="/dashboard">Dashboard</router-link> | 
+      <router-link to="/register">Register</router-link> | 
+      <router-link to="/sign-in">Login</router-link>
+      <button v-if="isLoggedIn" @click="handleSignOut" >Sign Out</button>
     </nav>
     <main class="App__main">
       <router-view/>
@@ -13,10 +16,31 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: `App`,
-};
+<script setup>
+import { onMounted, ref } from "vue";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from 'vue-router' // import router
+
+const router = useRouter(); // get a reference to our vue router
+const isLoggedIn = ref(false);
+
+let auth;
+onMounted(() => {
+  auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if(user) {
+      isLoggedIn.value = true;
+    } else {
+      isLoggedIn.value = false;
+    }
+  });
+})
+
+const handleSignOut = () => {
+  signOut(auth).then(() => {
+    router.push("/");
+  });
+}
 </script>
 
 <style lang="scss">
