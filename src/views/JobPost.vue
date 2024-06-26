@@ -1,51 +1,37 @@
 <template>
     <div>
-        <h1>Dashboard</h1>
-        <page-pagination
-        :total-pages="totalPages"
-        :per-page="perPage"
-        :current-page="currentPage"
-        @pagechanged="onPageChange"
-        />
         <p v-if="loading">Loading...</p>
         <p v-if="error">Error:: {{ error }}</p>
-        <ul v-if="currentPageJobs">
-            <p>Displaying jobs {{ pageFirstJobIndex }}-{{ pageFirstJobIndex + perPage -1 }} / {{ totalJobsCount }}</p>
-            <li v-for="item in currentPageJobs" :key="item.id">
-                {{item.scrapStatus}} - 
-                <a :href="'/jobs/' + item._id">
-                    {{ item.title }} <br> [{{item.company}}]
-                </a>
-                 
-                <br> {{ item.country }}/{{ item.city }} 
-                <br> #{{ item.tags }} 
-                <br> ({{ item.contractType }})
-                <br> Status: {{ item.status }}
-                <span v-if="item.applicationDate"><br> Applied on: {{ item.applicationDate }}</span>
-                
-            </li>
-        </ul>
-        <page-pagination
-        :total-pages="totalPages"
-        :per-page="perPage"
-        :current-page="currentPage"
-        @pagechanged="onPageChange"
-        />
+        <div v-if="jobData">
+            {{jobData.scrapStatus}} - <h1>{{jobData.title}}</h1>
+            {{jobData.company}}
+            <br> {{ jobData.country }}/{{ jobData.city }}
+            <br> #{{ jobData.tags }} 
+            <br> ({{ jobData.contractType }})
+            <br> Url: <a :href="jobData.url">{{ jobData.url }}</a>
+            
+            <br> Apply Url: <a :href="jobData.applyUrl">{{ jobData.applyUrl }}</a>
+            <br> Created at: {{ jobData.createdAt }}
+            <span v-if="jobData.applicationDate"><br> Applied on: {{ jobData.applicationDate }}</span>
+            <br><button @click="jobApplied" >Applied</button>
+            <div>
+                {{ jobData.description }}
+            </div>
+        </div>
+
   </div>
 </template>
   
 <script>
 //import  ProductComponent  from './components/ProductComponent.vue';
-import PagePagination from '../components/PagePagination.vue'
 import axios from "axios";
 
 export default {
-    name: "JobManagerDashboard", // useful for debugging purposes
+    name: "JobPost", // useful for debugging purposes
     components: {
         // declared child components
         // Components that can be used in the template
         //ProductComponent,
-        PagePagination
     },
     props: {
 		// The parameters the component accepts
@@ -76,14 +62,8 @@ export default {
         // component internal state variables
         return {
             //firstName: 'Vue',
-            currentPageJobs: [],
-            nextPageJobs: [],
-            currentPage: 1,
-            totalPages: 1,
             apiUrl:"http://192.168.1.99:8000/jobs",
-            perPage: 25,
-            totalJobsCount:null,
-            pageFirstJobIndex:1,
+            jobData: null,
             loading: false,
             error: null
         } 
@@ -111,8 +91,8 @@ export default {
     },
 	mounted() {
         console.log("JobManagerDashboard - mounted");
-        console.log("fetching jobs from the jobs API...");
-        this.fetchJobsPage(1)
+        console.log("fetching job's data from the jobs API...");
+        this.fetchJobData()
     },
 	beforeUpdate() {
         console.log("JobManagerDashboard - beforeUpdate");
@@ -140,23 +120,16 @@ export default {
 		//setFirstName() {  
 		//  this.firstName='Joe'  
 		//}
-        async fetchJobsPage(page) {
+        async fetchJobData() {
             this.loading = true;
             this.error = null;
             try {
-                const response = await axios.get(`${this.apiUrl}`,{
-                    params:{
-                        page: page,
-                        perPage: this.perPage
-                    }
+                const response = await axios.get(`${this.apiUrl}/${this.$route.params.jobId}`,{
+                    params:{ }
                 });
                 let data = response.data;
                 if (data){
-                    this.totalPages = Math.ceil(data.documents_count / data.perPage)
-                    this.perPage = data.perPage
-                    this.currentPageJobs = data.data
-                    this.totalJobsCount = data.documents_count
-                    this.pageFirstJobIndex = (this.currentPage -1) * this.perPage + 1
+                    this.jobData = data
                 }
                 
             } catch (err) {
@@ -166,12 +139,49 @@ export default {
             }
         },
         
+        formatDescription(jobDescription) {
+            
+        },
 
+        async jobApplied() {
+            console.log("jobApplied - Start")
+            let m = new Date();
+            let dateString =
+                m.getUTCFullYear() + "-" +
+                ("0" + (m.getUTCMonth()+1)).slice(-2) + "-" +
+                ("0" + m.getUTCDate()).slice(-2) + "T" +
+                ("0" + m.getUTCHours()).slice(-2) + ":" +
+                ("0" + m.getUTCMinutes()).slice(-2) + ":" +
+                ("0" + m.getUTCSeconds()).slice(-2);
 
-        onPageChange(page) {
-            console.log(page)
-            this.currentPage = page;
-            this.fetchJobsPage(page)
+            console.log(dateString);
+            let payload = {
+                "applicationDate":dateString
+            }
+            console.log("updating the database object...")
+            try {
+                const response = await axios({
+                    url:`${this.apiUrl}/${this.$route.params.jobId}`,
+                    method: 'PATCH',
+                    data: payload,
+                    
+                    //{   Host: "http://192.168.1.99:3000",
+                    //    Origin: "http://192.168.1.99:3000", }
+                        //{//"Content-Type": 'application/x-www-form-urlencoded'}
+                });
+                //let data = response.data;
+                console.log("pouet")
+                console.log(response)
+                if (response.status == 200){
+                    //this.jobData = data
+                }
+                
+            } catch (err) {
+                this.error = 'Failed to fetch data';
+            } finally {
+                this.loading = false;
+            }
+
         }
 	},
 

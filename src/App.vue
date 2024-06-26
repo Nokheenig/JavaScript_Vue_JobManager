@@ -2,7 +2,7 @@
   <div class="App">
     <nav class="App__nav">
       <router-link to="/">Home</router-link> | 
-      <router-link to="/dashboard">Dashboard</router-link> | 
+      <router-link to="/jobs/dashboard">Dashboard</router-link> | 
       <router-link to="/register">Register</router-link> | 
       <router-link to="/sign-in">Login</router-link>
       <button v-if="isLoggedIn" @click="handleSignOut" >Sign Out</button>

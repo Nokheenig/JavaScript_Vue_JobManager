@@ -6,8 +6,15 @@ const routes = [
     { path: "/register", component: () => import("../views/JobManagerRegister.vue")},
     { path: "/sign-in", component: () => import("../views/JobManagerSignIn.vue")},
     { 
-        path: "/dashboard", 
+        path: "/jobs/dashboard", 
         component: () => import("../views/JobManagerDashboard.vue"),
+        meta: {
+            requiresAuth: true
+        }
+    },
+    { 
+        path: "/jobs/:jobId", 
+        component: () => import("../views/JobPost.vue"),
         meta: {
             requiresAuth: true
         }

@@ -13,5 +13,8 @@ module.exports = defineConfig({
         "crypto": require.resolve("crypto-browserify")
       }
     }
+  },
+  devServer: {
+    host: "homelab.nodemo.fr"
   }
 })
