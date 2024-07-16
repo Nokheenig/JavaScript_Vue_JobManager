@@ -127,18 +127,23 @@
     methods: {
       onClickFirstPage() {
         this.$emit('pagechanged', 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       onClickPreviousPage() {
         this.$emit('pagechanged', this.currentPage - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       onClickPage(page) {
         this.$emit('pagechanged', page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       onClickNextPage() {
         this.$emit('pagechanged', this.currentPage + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       onClickLastPage() {
         this.$emit('pagechanged', this.totalPages);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       isPageActive(page) {
         return this.currentPage === page;

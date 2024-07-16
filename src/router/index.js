@@ -18,7 +18,18 @@ const routes = [
         meta: {
             requiresAuth: true
         }
-    }
+    },
+    { 
+        path: "/jobs/stats", 
+        component: () => import("../views/JobManagerStats.vue"),
+        meta: {
+            requiresAuth: true
+        }
+    },
+    { 
+        path: "/escape-game", 
+        component: () => import("../views/EscapeGame.vue"),
+    },
 ]
 
 const router = createRouter({

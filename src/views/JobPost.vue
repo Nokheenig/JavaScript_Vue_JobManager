@@ -4,16 +4,30 @@
         <p v-if="error">Error:: {{ error }}</p>
         <div v-if="jobData">
             {{jobData.scrapStatus}} - <h1>{{jobData.title}}</h1>
-            {{jobData.company}}
-            <br> {{ jobData.country }}/{{ jobData.city }}
-            <br> #{{ jobData.tags }} 
-            <br> ({{ jobData.contractType }})
-            <br> Url: <a :href="jobData.url">{{ jobData.url }}</a>
+            {{jobData.company}} <br>
+            {{ jobData.country }}/{{ jobData.city }} <br>
+            #{{ jobData.tags }} <br>  
+            ({{ jobData.contractType }}) <br> 
+            Url: <a :href="jobData.url" target="_blank" rel="noopener noreferrer">{{ jobData.url }}</a> <br> 
             
-            <br> Apply Url: <a :href="jobData.applyUrl">{{ jobData.applyUrl }}</a>
-            <br> Created at: {{ jobData.createdAt }}
-            <span v-if="jobData.applicationDate"><br> Applied on: {{ jobData.applicationDate }}</span>
-            <br><button @click="jobApplied" >Applied</button>
+            Apply Url: <a :href="jobData.applyUrl" target="_blank" rel="noopener noreferrer">{{ jobData.applyUrl }}</a> <br> 
+            Date, (Last updated): {{ jobData.createdAt }} 
+            <span v-if="jobData.lastUpdated">, ({{ jobData.lastUpdated }})</span>
+            <br><span v-if="jobData.applicationDate">Applied on: {{ jobData.applicationDate }} <br> </span>
+            Status: {{ jobData.status }} <br>
+            <div class="jobPostActions">
+                Update status:
+                <button v-if="jobData.status==jobStatus.Null || jobData.status==jobStatus.New" @click="jobUpdateStatus(jobStatus.Open_ReferalStage)" >Open (Referal stage)</button>
+                <button v-if="jobData.status==jobStatus.Null || jobData.status==jobStatus.New" @click="jobUpdateStatus(jobStatus.Open_ReadyToApply)" >Open (Ready to apply)</button>
+                <button v-if="jobData.status==jobStatus.Null || jobData.status==jobStatus.New" @click="jobUpdateStatus(jobStatus.Closed_NotInterested)" >Closed (NotInterested)</button>
+                <button v-if="jobData.status==jobStatus.Open_ReferalStage || jobData.status==jobStatus.Open_ReadyToApply" @click="jobUpdateStatus(jobStatus.OnGoing_SelectedForApplication)" >OnGoing (Selected for application)</button>
+                <button v-if="jobData.status==jobStatus.OnGoing_SelectedForApplication" @click="jobApplied" >OnGoing (Applied)</button>
+                <button v-if="jobData.status==jobStatus.OnGoing_SelectedForApplication" @click="jobUpdateStatus(jobStatus.Closed_Expired)" >Closed (Expired)</button>
+                <button v-if="jobData.status==jobStatus.OnGoing_Applied" @click="jobUpdateStatus(jobStatus.Closed_Lost)" >Closed (Lost)</button>
+                <button v-if="jobData.status==jobStatus.OnGoing_Applied" @click="jobUpdateStatus(jobStatus.Closed_Expired)" >Closed (Expired)</button>
+                <button v-if="jobData.status==jobStatus.Null || jobData.status==jobStatus.New || jobData.status==jobStatus.OnGoing_Applied" @click="jobUpdateStatus(jobStatus.Closed_Lost_DoNotQualify)" >Closed (Do not qualify)</button>
+                <button v-if="jobData.status==jobStatus.OnGoing_Applied" @click="jobUpdateStatus(jobStatus.Closed_Timeout)" >Closed (Timeout)</button>
+            </div>
             <div>
                 {{ jobData.description }}
             </div>
@@ -65,7 +79,20 @@ export default {
             apiUrl:"http://192.168.1.99:8000/jobs",
             jobData: null,
             loading: false,
-            error: null
+            error: null,
+            jobStatus:{
+                Null: null,
+                New: "New",
+                Open_ReferalStage: "Open_ReferalStage",
+                Open_ReadyToApply: "Open_ReadyToApply",
+                OnGoing_SelectedForApplication: "OnGoing_SelectedForApplication",
+                OnGoing_Applied: "OnGoing_Applied",
+                Closed_Lost:"Closed_Lost",
+                Closed_Expired: "Closed_Expired",
+                Closed_Lost_DoNotQualify: "Closed_Lost_DoNotQualify",
+                Closed_Timeout: "Closed_Timeout",
+                Closed_NotInterested: "Closed_NotInterested"
+            }
         } 
     }, 
     computed: {
@@ -139,9 +166,9 @@ export default {
             }
         },
         
-        formatDescription(jobDescription) {
-            
-        },
+        //formatDescription(jobDescription) {
+        //    
+        //},
 
         async jobApplied() {
             console.log("jobApplied - Start")
@@ -170,10 +197,13 @@ export default {
                         //{//"Content-Type": 'application/x-www-form-urlencoded'}
                 });
                 //let data = response.data;
-                console.log("pouet")
+                //console.log("pouet")
                 console.log(response)
                 if (response.status == 200){
                     //this.jobData = data
+                    console.log("Job application date successfully updated")
+                    //this.fetchJobData()
+                    this.jobUpdateStatus(this.jobStatus.OnGoing_Applied)
                 }
                 
             } catch (err) {
@@ -182,6 +212,39 @@ export default {
                 this.loading = false;
             }
 
+        },
+        async jobUpdateStatus(status) {
+            console.log("jobUpdateStatus - Start")
+            
+            let payload = {
+                "status":status
+            }
+            console.log("updating the database object...")
+            try {
+                const response = await axios({
+                    url:`${this.apiUrl}/${this.$route.params.jobId}`,
+                    method: 'PATCH',
+                    data: payload,
+                    
+                    //{   Host: "http://192.168.1.99:3000",
+                    //    Origin: "http://192.168.1.99:3000", }
+                        //{//"Content-Type": 'application/x-www-form-urlencoded'}
+                });
+                //let data = response.data;
+                //console.log("pouet")
+                console.log(response)
+                if (response.status == 200){
+                    //this.jobData = data
+                    console.log("Job status successfully updated")
+                    this.fetchJobData()
+                }
+                
+            } catch (err) {
+                this.error = 'Failed to fetch data';
+            } finally {
+                this.loading = false;
+            }
+            console.log("jobUpdateStatus - End")
         }
 	},
 
@@ -189,5 +252,15 @@ export default {
 </script>
 
 <style>
-
+.jobPostActions{
+    display: flex;
+    flex-direction: row;
+}
+.jobPostActions > * {
+    margin-right: 1em;
+}
+.jobPostActions > *:first-child {
+    margin-right: 1em;
+    margin-left: 1em;
+}
 </style>
