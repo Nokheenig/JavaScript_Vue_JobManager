@@ -13,6 +13,13 @@ const routes = [
         }
     },
     { 
+        path: "/jobs/dashboard-add-post", 
+        component: () => import("../views/JobManagerDashboardAddPost.vue"),
+        meta: {
+            requiresAuth: true
+        }
+    },
+    { 
         path: "/jobs/:jobId", 
         component: () => import("../views/JobPost.vue"),
         meta: {

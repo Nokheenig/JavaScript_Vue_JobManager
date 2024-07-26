@@ -3,6 +3,7 @@
     <nav class="App__nav">
       <router-link to="/">Home</router-link> | 
       <router-link to="/jobs/dashboard">Dashboard</router-link> | 
+      <router-link to="/jobs/dashboard-add-post">Dashboard Add Post</router-link> | 
       <router-link to="/jobs/stats">Stats</router-link> | 
       <router-link to="/escape-game">Escape Game</router-link> | 
       <router-link to="/register">Register</router-link> | 
