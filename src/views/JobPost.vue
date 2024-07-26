@@ -157,6 +157,7 @@ export default {
                 let data = response.data;
                 if (data){
                     this.jobData = data
+                    document.title = this.jobData.title + " - " + this.jobData.company + " [" + this.jobData.city + ", " + this.jobData.country + "]"
                 }
                 
             } catch (err) {
@@ -173,11 +174,12 @@ export default {
         async jobApplied() {
             console.log("jobApplied - Start")
             let m = new Date();
+            const timezoneShift = 2;
             let dateString =
                 m.getUTCFullYear() + "-" +
                 ("0" + (m.getUTCMonth()+1)).slice(-2) + "-" +
                 ("0" + m.getUTCDate()).slice(-2) + "T" +
-                ("0" + m.getUTCHours()).slice(-2) + ":" +
+                ("0" + (m.getUTCHours()+timezoneShift)).slice(-2) + ":" +
                 ("0" + m.getUTCMinutes()).slice(-2) + ":" +
                 ("0" + m.getUTCSeconds()).slice(-2);
 
