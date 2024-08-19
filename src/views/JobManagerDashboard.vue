@@ -161,7 +161,7 @@ export default {
             nextPageJobs: [],
             currentPage: 1,
             totalPages: 1,
-            apiUrl:"http://192.168.1.99:8000/jobs",
+            apiUrl: process.env.VUE_APP_JOB_MANAGER_API,
             perPage: 25,
             totalJobsCount:null,
             pageFirstJobIndex:1,
@@ -380,11 +380,40 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+
+.jobsContainer{
+    margin-left: 25px;
+    ul{
+        list-style-type: none;
+        li{
+            border: 2px inset rgb(150,100,255);
+            background-color: rgb(209, 206, 216);
+            border-radius: .75em;
+            padding: .75em;
+            margin-bottom: .5em;
+            
+        }
+        /*
+        li::before{
+            content: ""; / No content, just styling /
+            display: inline-block;
+            width: 10px; / Custom width /
+            height: 10px; / Custom height /
+            margin-right: 10px; / Space between bullet and text /
+            background-color: #000; / Custom color /
+            border-radius: 50%; / Make it a circle /
+            }
+        */
+    }
+}
 .jobStatusCheckboxContainer{
     height: fit-content;
     width: 15em;
-    background-color: aquamarine;
+    //background-color: aquamarine;
+    border: 2px inset grey;
+    border-radius: 0.25em;
+    padding: 5px;
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -392,7 +421,7 @@ export default {
 .dashboardContainer{
     height: fit-content;
     width: max-content;
-    background-color: blanchedalmond;
+    //background-color: blanchedalmond;
     display: flex;
     flex-direction: row;
 }

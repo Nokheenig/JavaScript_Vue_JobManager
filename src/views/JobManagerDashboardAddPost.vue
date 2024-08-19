@@ -40,6 +40,7 @@
 <script>
 //import  ProductComponent  from './components/ProductComponent.vue';
 import axios from "axios";
+//import api_url from "/src/main.js";
 
 export default {
     name: "JobManagerDashboard", // useful for debugging purposes
@@ -77,7 +78,7 @@ export default {
         // component internal state variables
         return {
             //firstName: 'Vue',
-            apiUrl:"http://192.168.1.99:8000/jobs",
+            apiUrl: process.env.VUE_APP_JOB_MANAGER_API,
             loading: false,
             error: null,
             jobData:{
@@ -298,6 +299,8 @@ export default {
         },
         async postJob() {
             console.log("postJob - Start")
+            console.log("apiUrl:", this.apiUrl)
+            console.log(process.env.VUE_APP_JOB_MANAGER_API)
             this.error = null
             this.jobData.applyUrl = this.jobData.applyUrl ? this.jobData.applyUrl : this.jobData.url
             
