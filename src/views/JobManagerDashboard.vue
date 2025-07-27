@@ -161,7 +161,7 @@ export default {
             nextPageJobs: [],
             currentPage: 1,
             totalPages: 1,
-            apiUrl:"http://192.168.1.99:8000/jobs",
+            apiUrl:"http://192.168.1.100:8000/jobs",
             perPage: 25,
             totalJobsCount:null,
             pageFirstJobIndex:1,
@@ -355,8 +355,8 @@ export default {
                     method: 'PATCH',
                     data: payload,
                     
-                    //{   Host: "http://192.168.1.99:3000",
-                    //    Origin: "http://192.168.1.99:3000", }
+                    //{   Host: "http://192.168.1.100:3000",
+                    //    Origin: "http://192.168.1.100:3000", }
                         //{//"Content-Type": 'application/x-www-form-urlencoded'}
                 });
                 //let data = response.data;

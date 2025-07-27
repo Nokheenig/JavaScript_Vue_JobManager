@@ -54,7 +54,7 @@ export default {
         // component internal state variables
         return {
             //firstName: 'Vue',
-            apiUrl:"http://192.168.1.99:8000/jobs",
+            apiUrl:"http://192.168.1.100:8000/jobs",
             applicationStats: null,
             loading: false,
             error: null,
